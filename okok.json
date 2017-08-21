@@ -1,0 +1,32 @@
+{
+  "email": "a55665939@yahoo.com.tw",
+  "password": "abc123",
+  "name": "范阿哲",
+  "phone": "09123456789",
+  "studentId": "V0224031",
+  "department": "資工系",
+  "lineId": "kevinypfan",
+  "roleId": "student"
+}
+{
+  "teamName": "大GG",
+  "title": "我愛大GG",
+  "registers": [
+    {
+      "name":"洪師兄",
+      "email": "asdijaosjdoasdjiapoidspdk"
+    },
+    {
+      "name":"施永順",
+      "email": "ojgroenrgoneroggergerg"
+    },
+    {
+      "name":"張雨喬",
+      "email": "eirjgoiernmgoinerhrthrt"
+    }],
+  "qualification": false,
+  "video": "diashjdoiashjopdsaodijpis",
+  "plan": "diashjdoiashjopdsaod",
+  "teacher": "楊至善"
+}
+ lodash express body-parser mongoose mongodb validator moment-timezone bcryptjs jsonwebtoken
