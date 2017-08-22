@@ -29,4 +29,12 @@
   "plan": "diashjdoiashjopdsaod",
   "teacher": "楊至善"
 }
+
+{
+  "PostId":1,
+  "title":"hellow",
+  "author":"test",
+  "content":"qweqweqweqwe今天天氣真好",
+  "time":"test"
+}
  lodash express body-parser mongoose mongodb validator moment-timezone bcryptjs jsonwebtoken

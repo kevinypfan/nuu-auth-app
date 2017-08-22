@@ -3,11 +3,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const {User} = require('./models/user.js');
-const {Team} = require('./models/team.js')
+const {Team} = require('./models/team.js');
+const {Post} = require('./models/post.js')
 const moment = require('moment-timezone');
 const {ObjectID} = require('mongodb')
 const {authenticate} = require('./middleware/authenticate.js')
-
+const {verifyRole} = require('./middleware/authenticate.js')
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost:27017/NuuGBrain', { useMongoClient: true });
 
@@ -25,6 +26,20 @@ app.post('/newTeam', authenticate, (req, res) => {
     res.status(403).send(e)
   })
 })
+//建立文章
+app.post('/newPost',verifyRole, (req, res) => {
+   var author = req.user.name;
+   console.log(author);
+  var body = _.pick(req.body,['PostId','title','content','time'])
+  var posts = new Post(body)
+  posts.author=author;
+  posts.save().then(()=>{
+    res.send(posts)
+  }).catch((e)=>{
+    res.status(403).send(e)
+  })
+})
+
 //註冊
 app.post('/signup',(req, res) => {
   var body = _.pick(req.body, ['email', 'password', 'name', 'phone', 'studentId', 'department', 'lineId', 'roleId'])
@@ -51,6 +66,12 @@ app.post('/signin', (req, res) => {
 })
 
 app.get('/me', authenticate, (req, res) => {
+  var user = req.user
+  var objUser = user.toJson()
+  res.send(objUser);
+})
+//測試驗證用
+app.get('/meverfy', verifyRole, (req, res) => {
   var user = req.user
   var objUser = user.toJson()
   res.send(objUser);
@@ -88,5 +109,5 @@ app.get('/role/:email', (req, res) => {
 app.listen(3000, () => {
   var date = moment().tz("Asia/Taipei")
 
-  console.log('start up post 3000'+ date);
+  //console.log('start up post 3000'+ date);
 })
