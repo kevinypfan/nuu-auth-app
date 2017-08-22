@@ -9,15 +9,55 @@ const moment = require('moment-timezone');
 const {ObjectID} = require('mongodb')
 const {authenticate} = require('./middleware/authenticate.js')
 const {verifyRole} = require('./middleware/authenticate.js')
+const multer = require('multer');
+const fs = require('fs')
+
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost:27017/NuuGBrain', { useMongoClient: true });
-
 
 var app = express();
 app.use(bodyParser.json());
 
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    if (!fs.existsSync( `${__dirname}/uploads/${req.body.teamName}`)){
+        fs.mkdirSync(`${__dirname}/uploads/${req.body.teamName}`);
+    }
+    cb(null,`${__dirname}/uploads/${req.body.teamName}`)
+    },
+    filename: function (req, file, cb) {
+      function getFileExtension1(filename) {
+        return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename)[0] : undefined;
+      }
+      var fileName = getFileExtension1(file.originalname);
+      cb(null, `${req.body.teamName}_${Date.now()}.${fileName}`)
+    }
+  })
+
+  var upload = multer({ storage }).any()
+  // console.log(upload)
+app.post('/creatTeam', authenticate, upload, (req, res) => {
+  var body = _.pick(req.body,['teamName','title','registers','qualification','teacher'])
+
+  var videoObj = req.files.filter((v)=>{
+    return v.mimetype == 'video/mp4'
+  })
+  var planObj = req.files.filter((p)=>{
+    return p.mimetype == 'application/pdf'
+  })
+  console.log(videoObj,planObj)
+  body.video = videoObj[0].path;
+  body.plan = planObj[0].path;
+  var team = new Team(body)
+  team.save().then(()=>{
+    res.send(team)
+  }).catch((e)=>{
+    res.status(403).send(e)
+  })
+})
+
 //新建隊伍
-app.post('/newTeam', authenticate, (req, res) => {
+app.post('/newTeam', authenticate, upload, (req, res) => {
   var body = _.pick(req.body,['teamName','title','registers','qualification','video','plan','teacher'])
   var team = new Team(body)
   team.save().then(()=>{
@@ -108,6 +148,5 @@ app.get('/role/:email', (req, res) => {
 
 app.listen(3000, () => {
   var date = moment().tz("Asia/Taipei")
-
-  //console.log('start up post 3000'+ date);
+  console.log('start up post 3000'+ Date.now());
 })

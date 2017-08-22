@@ -1,0 +1,24 @@
+{
+    "__v": 0,
+    "teamName": "大GG",
+    "title": "我愛大GG",
+    "qualification": false,
+    "video": "diashjdoiashjopdsaodijpis",
+    "plan": "diashjdoiashjopdsaod",
+    "teacher": "楊至善",
+    "_id": "599b65fd5f7ae12e248d08c8",
+    "registers": [
+        {
+            "email": "asdijaosjdoasdjiapoidspdk",
+            "name": "洪師兄"
+        },
+        {
+            "email": "ojgroenrgoneroggergerg",
+            "name": "施永順"
+        },
+        {
+            "email": "eirjgoiernmgoinerhrthrt",
+            "name": "張雨喬"
+        }
+    ]
+}
