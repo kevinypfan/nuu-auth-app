@@ -2,6 +2,7 @@ const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const nodemailer = require('nodemailer');
 const {User} = require('./models/user.js');
 const {Team} = require('./models/team.js');
 const {Post} = require('./models/post.js')
@@ -37,7 +38,7 @@ var storage = multer.diskStorage({
   })
 
   var upload = multer({ storage }).any()
-  // console.log(upload)
+//建立隊伍
 app.post('/creatTeam', authenticate, upload, function (req, res) {
   var body = _.pick(req.body,['teamName','title','registers','qualification','teacher'])
 
@@ -61,6 +62,34 @@ app.post('/creatTeam', authenticate, upload, function (req, res) {
     res.status(403).send(e)
   })
 })
+
+//寄郵件
+app.post('/sendMail',(req,res)=>{
+  var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'uranoni777@gmail.com',
+    pass: 'lucky909075'
+  }
+});
+
+var mailOptions = {
+  from: 'uranoni777@gmail.com',
+  to: 'kg650034@gmail.com',
+  subject: 'HI~哲歌 using Node.js',
+  html:'<h1>wwwwwwwwwwwwwwwwwwwwwwwwww</h1><br><h1>wwwwwwwwwwwwwwwwwwwwwwwwww</h1>'
+};
+
+transporter.sendMail(mailOptions, function(error, info){
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('Email sent: ' + info.response);
+    res.status(200).send("OK")
+  }
+});
+})
+
 
 //新建隊伍
 app.post('/newTeam', authenticate, upload, (req, res) => {
