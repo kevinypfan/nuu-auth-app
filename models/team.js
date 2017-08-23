@@ -6,15 +6,15 @@ var TeamSchema = new mongoose.Schema({
     type: String,
     trim: true,
     minlength: 1,
-    unique: true,
+    // unique: true,
     required: true
   },
   title: {
     type: String,
     required: true,
     minlength: 1,
-    trim: true,
-    unique: true
+    // unique: true,
+    trim: true
   },
   teacher: {
     type: String,
@@ -22,10 +22,16 @@ var TeamSchema = new mongoose.Schema({
     minlength: 1,
     trim: true
   },
-  registers: {
-    type: Array,
-    required: true
-  },
+  registers: [{
+    name: {
+      type: String,
+      trim: true
+    },
+    email: {
+      type: String,
+      trim: true
+    }
+  }],
   qualification: {
     type: Boolean,
     required: true

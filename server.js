@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const {User} = require('./models/user.js');
 const {Team} = require('./models/team.js');
 const {Post} = require('./models/post.js')
-const moment = require('moment-timezone');
+const moment = require('moment');
 const {ObjectID} = require('mongodb')
 const {authenticate} = require('./middleware/authenticate.js')
 const {verifyRole} = require('./middleware/authenticate.js')
@@ -17,6 +17,7 @@ mongoose.connect('mongodb://localhost:27017/NuuGBrain', { useMongoClient: true }
 
 var app = express();
 app.use(bodyParser.json());
+app.use(express.static(__dirname))
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -30,24 +31,29 @@ var storage = multer.diskStorage({
         return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename)[0] : undefined;
       }
       var fileName = getFileExtension1(file.originalname);
-      cb(null, `${req.body.teamName}_${Date.now()}.${fileName}`)
+      var date = Date.now()
+      cb(null, `${req.body.teamName}_${moment(date).format("YYYYMMDD_HHmmss")}.${fileName}`)
     }
   })
 
   var upload = multer({ storage }).any()
   // console.log(upload)
-app.post('/creatTeam', authenticate, upload, (req, res) => {
+app.post('/creatTeam', authenticate, upload, function (req, res) {
   var body = _.pick(req.body,['teamName','title','registers','qualification','teacher'])
 
+  // console.log(body);
   var videoObj = req.files.filter((v)=>{
     return v.mimetype == 'video/mp4'
   })
   var planObj = req.files.filter((p)=>{
     return p.mimetype == 'application/pdf'
   })
-  console.log(videoObj,planObj)
-  body.video = videoObj[0].path;
-  body.plan = planObj[0].path;
+  console.log(videoObj);
+  var pathRegexp = new RegExp("\/.*");
+  var videoPath = videoObj[0].destination.match(pathRegexp)[0]
+  var planPath = planObj[0].destination.match(pathRegexp)[0]
+  body.video = `${videoPath}/${videoObj[0].filename}`;
+  body.plan = `${planPath}/${planObj[0].filename}`;
   var team = new Team(body)
   team.save().then(()=>{
     res.send(team)
@@ -147,6 +153,7 @@ app.get('/role/:email', (req, res) => {
 })
 
 app.listen(3000, () => {
-  var date = moment().tz("Asia/Taipei")
-  console.log('start up post 3000'+ Date.now());
+  var date = Date.now()
+  console.log('start up post 3000');
+  console.log(moment(date).format("YYYYMMDD_HHmmss"));
 })
