@@ -22,46 +22,99 @@ app.use(express.static(__dirname))
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    if (!fs.existsSync( `${__dirname}/uploads/${req.body.teamName}`)){
-        fs.mkdirSync(`${__dirname}/uploads/${req.body.teamName}`);
+    var team = JSON.parse(req.body.teamData)
+    if (!fs.existsSync( `${__dirname}/uploads/${team.teamName}`)){
+        fs.mkdirSync(`${__dirname}/uploads/${team.teamName}`);
     }
-    cb(null,`${__dirname}/uploads/${req.body.teamName}`)
+    cb(null,`${__dirname}/uploads/${team.teamName}`)
     },
     filename: function (req, file, cb) {
+      var team = JSON.parse(req.body.teamData)
       function getFileExtension1(filename) {
         return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename)[0] : undefined;
       }
       var fileName = getFileExtension1(file.originalname);
       var date = Date.now()
-      cb(null, `${req.body.teamName}_${moment(date).format("YYYYMMDD_HHmmss")}.${fileName}`)
+      cb(null, `${team.teamName}_${moment(date).format("YYYYMMDD_HHmmss")}.${fileName}`)
     }
   })
 
   var upload = multer({ storage }).any()
-//建立隊伍
-app.post('/creatTeam', authenticate, upload, function (req, res) {
-  var body = _.pick(req.body,['teamName','title','registers','qualification','teacher'])
+//更新pdf
+app.patch('/updatePDF', authenticate, upload, (req, res) => {
+  var teamData = JSON.parse(req.body.teamData)
+  var pathRegexp = new RegExp("\/.*");
+  var planPath = req.files[0].destination.match(pathRegexp)[0]+'/'+req.files[0].filename;
+  Team.findOne({_id: teamData._id}).then((team) => {
+    return team.planUpdate(planPath)
+  }).then((team) => {
+    res.send(team)
+  }).catch((e) => {
+    res.status(403).send(e)
+  })
+})
+//更新mp4
+app.patch('/updateMP4', authenticate, upload, (req, res) => {
+  var teamData = JSON.parse(req.body.teamData)
+  var pathRegexp = new RegExp("\/.*");
+  var mp4Path = req.files[0].destination.match(pathRegexp)[0]+'/'+req.files[0].filename;
+  Team.findOne({_id: teamData._id}).then((team) => {
+    return team.ma4Update(mp4Path)
+  }).then((team) => {
+    res.send(team)
+  }).catch((e) => {
+    res.status(403).send(e)
+  })
+})
 
-  // console.log(body);
+// app.patch('/updateMP4')
+//建立隊伍(新)
+app.post('/creatTeam', authenticate, upload, function (req, res) {
+  var body = JSON.parse(req.body.teamData)
+  var teamData =  _.pick(body,['teamName','title','registers','qualification','teacher'])
   var videoObj = req.files.filter((v)=>{
     return v.mimetype == 'video/mp4'
   })
   var planObj = req.files.filter((p)=>{
     return p.mimetype == 'application/pdf'
   })
-  console.log(videoObj);
   var pathRegexp = new RegExp("\/.*");
   var videoPath = videoObj[0].destination.match(pathRegexp)[0]
   var planPath = planObj[0].destination.match(pathRegexp)[0]
-  body.video = `${videoPath}/${videoObj[0].filename}`;
-  body.plan = `${planPath}/${planObj[0].filename}`;
-  var team = new Team(body)
+  teamData.video = `${videoPath}/${videoObj[0].filename}`;
+  teamData.plan = `${planPath}/${planObj[0].filename}`;
+  var team = new Team(teamData)
   team.save().then(()=>{
     res.send(team)
   }).catch((e)=>{
     res.status(403).send(e)
   })
 })
+
+//建立隊伍(舊)
+// app.post('/creatTeam', authenticate, upload, function (req, res) {
+//   var body = _.pick(req.body,['teamName','title','registers','qualification','teacher'])
+//
+//   // console.log(body);
+//   var videoObj = req.files.filter((v)=>{
+//     return v.mimetype == 'video/mp4'
+//   })
+//   var planObj = req.files.filter((p)=>{
+//     return p.mimetype == 'application/pdf'
+//   })
+//   console.log(videoObj);
+//   var pathRegexp = new RegExp("\/.*");
+//   var videoPath = videoObj[0].destination.match(pathRegexp)[0]
+//   var planPath = planObj[0].destination.match(pathRegexp)[0]
+//   body.video = `${videoPath}/${videoObj[0].filename}`;
+//   body.plan = `${planPath}/${planObj[0].filename}`;
+//   var team = new Team(body)
+//   team.save().then(()=>{
+//     res.send(team)
+//   }).catch((e)=>{
+//     res.status(403).send(e)
+//   })
+// })
 
 //寄郵件
 app.post('/sendMail',(req,res)=>{

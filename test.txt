@@ -1,24 +1,23 @@
 {
-    "__v": 0,
-    "teamName": "大GG",
-    "title": "我愛大GG",
-    "qualification": false,
-    "video": "diashjdoiashjopdsaodijpis",
-    "plan": "diashjdoiashjopdsaod",
-    "teacher": "楊至善",
-    "_id": "599b65fd5f7ae12e248d08c8",
-    "registers": [
+    "_id" : "599fc93e7f75a431cc560b0d",
+    "teamName" : "y機d51rdfgd",
+    "title" : "y爛雞ajgr51hg",
+    "qualification" : false,
+    "teacher" : "楊至善",
+    "video" : "/uploads/y機d51rdfgd/y機d51rdfgd_20170825_145246.mp4",
+    "plan" : "/uploads/y機d51rdfgd/y機d51rdfgd_20170825_145246.pdf",
+    "registers" : [
         {
-            "email": "asdijaosjdoasdjiapoidspdk",
-            "name": "洪師兄"
+            "email" : "asdf@yahoo.com.tw",
+            "name" : "fsdfsdfsdfsdf"
         },
         {
-            "email": "ojgroenrgoneroggergerg",
-            "name": "施永順"
+            "email" : "a55665939@yahoo.com.tw",
+            "name" : "sadasdasdsad"
         },
         {
-            "email": "eirjgoiernmgoinerhrthrt",
-            "name": "張雨喬"
+            "email" : "abc123@yahoo.com.tw",
+            "name" : "ertertertert"
         }
     ]
 }
