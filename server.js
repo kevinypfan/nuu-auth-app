@@ -6,6 +6,7 @@ const nodemailer = require('nodemailer');
 const {User} = require('./models/user.js');
 const {Team} = require('./models/team.js');
 const {Post} = require('./models/post.js')
+const {Judge} = require('./models/judge.js')
 const moment = require('moment');
 const {ObjectID} = require('mongodb')
 const {authenticate} = require('./middleware/authenticate.js')
@@ -40,10 +41,65 @@ var storage = multer.diskStorage({
   })
 
   var upload = multer({ storage }).any()
+//找陣列裡東西
+app.get('/test', (req, res) => {
+  Team.findOne({"registers":{$elemMatch:{"email" : "isdbfiusdfub@yahoo.com.tw"}}}).then((result)=>{
+    res.send(result)
+  })
+})
+
+// app.get('/test2', (req, res) => {
+//   Judge.find().populate(
+//       {'teamDecides': {$elemMatch: _teamId}}
+//     ).then((result)=>{
+//       res.send(result)
+//     })
+// })
+
+app.patch('/updatePassword', authenticate, (req, res) => {
+  var body = req.body
+  User.findByToken({authToken: req.token}).then((user) => {
+    res.send(user)
+  })
+})
+
+//評審
+app.post('/teamJudge', authenticate, (req, res) => {
+  var body = req.body
+  var teamDecide = _.pick(body,['_teamId', 'firstTrial', 'reviewTrial', 'judgeComment'])
+  var {_teamId,firstTrial,reviewTrial,judgeComment} = teamDecide
+  var _judgeId = req.user._id
+  Judge.findOne({_judgeId}).then((judge) => {
+    var date = new Date()
+    // console.log(judge);
+    if (!judge) {
+      let tmp = {
+        _judgeId,
+        firstTrialDate: date,
+        reviewTrialDate: date,
+        teamDecides: [
+          {_teamId,firstTrial,reviewTrial,judgeComment}
+        ]}
+      var judge = new Judge(tmp)
+      return judge.save()
+    }
+    var judge = new Judge(judge)
+    // console.log(judge);
+    return judge.judgeDecide(teamDecide)
+  }).then((judge) => {
+    res.send(judge);
+  }).catch((e) => {
+    res.status(403).send(e)
+  })
+})
+
+
+
+
 //更新pdf
 app.patch('/updatePDF', authenticate, upload, (req, res) => {
   var teamData = JSON.parse(req.body.teamData)
-  var pathRegexp = new RegExp("\/.*");
+  var pathRegexp = new RegExp("\/uploads.*");
   var planPath = req.files[0].destination.match(pathRegexp)[0]+'/'+req.files[0].filename;
   Team.findOne({_id: teamData._id}).then((team) => {
     return team.planUpdate(planPath)
@@ -56,7 +112,7 @@ app.patch('/updatePDF', authenticate, upload, (req, res) => {
 //更新mp4
 app.patch('/updateMP4', authenticate, upload, (req, res) => {
   var teamData = JSON.parse(req.body.teamData)
-  var pathRegexp = new RegExp("\/.*");
+  var pathRegexp = new RegExp("\/uploads.*");
   var mp4Path = req.files[0].destination.match(pathRegexp)[0]+'/'+req.files[0].filename;
   Team.findOne({_id: teamData._id}).then((team) => {
     return team.ma4Update(mp4Path)
@@ -78,7 +134,7 @@ app.post('/creatTeam', authenticate, upload, function (req, res) {
   var planObj = req.files.filter((p)=>{
     return p.mimetype == 'application/pdf'
   })
-  var pathRegexp = new RegExp("\/.*");
+  var pathRegexp = new RegExp("\/uploads.*");
   var videoPath = videoObj[0].destination.match(pathRegexp)[0]
   var planPath = planObj[0].destination.match(pathRegexp)[0]
   teamData.video = `${videoPath}/${videoObj[0].filename}`;
@@ -90,31 +146,6 @@ app.post('/creatTeam', authenticate, upload, function (req, res) {
     res.status(403).send(e)
   })
 })
-
-//建立隊伍(舊)
-// app.post('/creatTeam', authenticate, upload, function (req, res) {
-//   var body = _.pick(req.body,['teamName','title','registers','qualification','teacher'])
-//
-//   // console.log(body);
-//   var videoObj = req.files.filter((v)=>{
-//     return v.mimetype == 'video/mp4'
-//   })
-//   var planObj = req.files.filter((p)=>{
-//     return p.mimetype == 'application/pdf'
-//   })
-//   console.log(videoObj);
-//   var pathRegexp = new RegExp("\/.*");
-//   var videoPath = videoObj[0].destination.match(pathRegexp)[0]
-//   var planPath = planObj[0].destination.match(pathRegexp)[0]
-//   body.video = `${videoPath}/${videoObj[0].filename}`;
-//   body.plan = `${planPath}/${planObj[0].filename}`;
-//   var team = new Team(body)
-//   team.save().then(()=>{
-//     res.send(team)
-//   }).catch((e)=>{
-//     res.status(403).send(e)
-//   })
-// })
 
 //寄郵件
 app.post('/sendMail',(req,res)=>{
@@ -143,7 +174,6 @@ transporter.sendMail(mailOptions, function(error, info){
 });
 })
 
-
 //新建隊伍
 app.post('/newTeam', authenticate, upload, (req, res) => {
   var body = _.pick(req.body,['teamName','title','registers','qualification','video','plan','teacher'])
@@ -154,6 +184,7 @@ app.post('/newTeam', authenticate, upload, (req, res) => {
     res.status(403).send(e)
   })
 })
+
 //建立文章
 app.post('/newPost',verifyRole, (req, res) => {
    var author = req.user.name;
@@ -174,13 +205,14 @@ app.post('/signup',(req, res) => {
   body.time = new Date().toString();
   var user = new User(body);
   user.save().then(() => {
-    user.generateAuthToken();
+    return user.generateAuthToken();
   }).then((token) => {
     res.header('authToken', token).send();
   }).catch((e) => {
     res.status(400).send(e);
   })
 });
+
 //登入
 app.post('/signin', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
