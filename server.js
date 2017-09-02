@@ -11,6 +11,7 @@ const moment = require('moment');
 var userRouter = require('./api/user.js')
 var postRouter = require('./api/post.js')
 var teamRouter = require('./api/team.js')
+var pointRouter = require('./api/point.js')
 
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost:27017/NuuGBrain', { useMongoClient: true });
@@ -23,6 +24,7 @@ app.use(express.static(__dirname))
 app.use('/api/user', userRouter)
 app.use('/api/post', postRouter)
 app.use('/api/team', teamRouter)
+app.use('/api/point', pointRouter)
 
 //找陣列裡東西
 app.get('/test', (req, res) => {

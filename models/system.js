@@ -26,12 +26,20 @@ var SystemSchema = new mongoose.Schema({
   },
   finalTrialStart: {
     type: String
+  },
+  score1Percent: {
+    type: Number
+  },
+  score2Percent: {
+    type: Number
+  },
+  gamePath: {
+    type: String
+  },
+  email: {
+    type: String
   }
 })
-// EMAIL
-// 初審權重
-// 複審權重
-// 比賽辦法path
 
 var System = mongoose.model('System',SystemSchema)
 
