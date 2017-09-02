@@ -148,7 +148,7 @@ app.patch('/updateMP4', authenticate, upload, (req, res) => {
 //建立隊伍(新)
 app.post('/creatTeam', authenticate, upload, function (req, res) {
   var body = JSON.parse(req.body.teamData)
-  var teamData =  _.pick(body,['teamName','title','registers','qualification','teacher'])
+  var teamData =  _.pick(body,['teamName','title','registers','qualification','teacher', 'leader'])
   var videoObj = req.files.filter((v)=>{
     return v.mimetype == 'video/mp4'
   })
@@ -229,7 +229,6 @@ app.post('/signup',(req, res) => {
   body.time = new Date().toString();
   var user = new User(body);
   user.save().then(() => {
-
     return user.generateAuthToken();
   }).then((token) => {
     res.header('authToken', token).send();
