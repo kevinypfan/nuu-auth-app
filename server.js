@@ -64,15 +64,24 @@ app.get('/test3', (req, res) => {
 })
 
 app.get('/test4', (req, res) => {
-  Point.find({ 'points.name': { $ne : 'May'}}).then((result) => {
+  Point.find({ 'points.name': { $ne : 'May'}})
+  .then((result) => {
     res.send(result)
   })
 })
 
 app.patch('/updatePassword', authenticate, (req, res) => {
   var body = req.body
-  User.findByToken({authToken: req.token}).then((user) => {
+  User.findOne({email: req.user.email})
+  .then((user) => {
+    return user.updatePassword(body.oldPassword, body.newPassword)
+  }).then((user) => {
+    console.log(user);
+    return user.save()
+  }).then((user) => {
     res.send(user)
+  }).catch((err) => {
+    res.status(403).send(err)
   })
 })
 
@@ -233,11 +242,12 @@ app.post('/signup',(req, res) => {
 app.post('/signin', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   User.findByCredentials(body.email, body.password).then((user) => {
-    return user.generateAuthToken().then((token) => {
+    return user.generateAuthToken()
+    .then((token) => {
       res.header('authToken', token).send();
-    }).catch(() => {
-      res.status(403).send();
     })
+  }).catch((e) => {
+    res.status(403).send(e);
   })
 })
 

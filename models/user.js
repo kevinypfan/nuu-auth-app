@@ -72,7 +72,6 @@ UserSchema.methods.generateAuthToken = function () {
   var token = jwt.sign({_id: user._id.toHexString(), access},'abc123').toString();
 
   user.tokens.push({access, token});
-  console.log(token);
   return user.save().then(() => {
     return token
   })
@@ -94,6 +93,42 @@ UserSchema.methods.userUpdata = function (body) {
   })
 }
 
+// UserSchema.methods.updatePassword = function (oldPassword, newPassword) {
+//   var user = this;
+//   return new Promise((resolve, reject) => {
+//     bcrypt.compare(oldPassword, user.password).then((res) => {
+//       if (res) {
+//         user.update({
+//           $set: { password: newPassword }
+//         }).then((user) => {
+//           resolve(user)
+//         })
+//       } else {
+//         reject("舊密碼錯誤")
+//       }
+//     })
+//   })
+// }
+
+UserSchema.methods.updatePassword = function (oldPassword, newPassword) {
+  var user = this;
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(oldPassword, user.password).then((res) => {
+      if (res) {
+        user.update({
+          $set: { newPassword }
+        }).then(() => {
+          user.password = newPassword
+          resolve(user)
+        })
+      } else {
+        reject("舊密碼錯誤")
+      }
+    })
+  })
+}
+
+
 UserSchema.methods.removeToken = function (token) {
   var user = this;
 
@@ -107,18 +142,18 @@ UserSchema.methods.removeToken = function (token) {
 UserSchema.statics.findByCredentials = function (email, password) {
   var User = this;
 
-  return User.findOne({email}).then(user => {
-    if (!email) {
-      return Promise.reject("找不到這個信箱");
+  return User.findOne({email}).then((user) => {
+    if (!user) {
+      return Promise.reject("沒有這個會員");
     }
     return new Promise((resolve, reject) => {
-      bcrypt.compare(password, user.password).then(res => {
-        if(res) {
-          resolve(user);
-        } else {
-          reject("您的密碼錯誤");
-        }
-      })
+      bcrypt.compare(password, user.password).then((res) => {
+         if (res) {
+           resolve(user);
+         } else {
+           reject("此密碼錯誤");
+         }
+       })
     })
   })
 }
