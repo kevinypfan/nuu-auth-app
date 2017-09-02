@@ -24,7 +24,6 @@ var PostSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-
   time: {
     type: String,
     default: moment().tz("Asia/Taipei")

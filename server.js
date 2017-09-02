@@ -19,7 +19,6 @@ var app = express();
 app.use(bodyParser.json());
 app.use(express.static(__dirname))
 
-  var upload = multer({ storage }).any()
 
 app.use('/api/user', userRouter)
 app.use('/api/post', postRouter)

@@ -21,7 +21,7 @@
         }
     ]
 }
-{"teamName" : "y機d51rdfgd","title":"y爛雞ajgr51hg","qualification":false,"teacher":"楊至善","registers":[{"email" : "asdf@yahoo.com.tw","name" : "fsdfsdfsdfsdf"},{"email" : "a55665939@yahoo.com.tw","name" : "sadasdasdsad"},{"email" : "abc123@yahoo.com.tw","name" : "ertertertert"}]}
+
 
 {
 "_teamId":"59a952d9e31f23d3e473027b",
@@ -38,3 +38,12 @@
 "department": "資工",
 "lineId": "kebirji",
 "roleId": "student"
+
+
+{
+"name":"qwetr",
+"phone":"09651961",
+"studentId":"v156065",
+"department":"dsfgsdfgsdfg",
+"lineId":"fghdfhgjkjghghj"
+}

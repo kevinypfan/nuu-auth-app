@@ -13,7 +13,9 @@ teamRouter.patch('/updatePDF', authenticate, upload, (req, res) => {
   var teamData = JSON.parse(req.body.teamData)
   var pathRegexp = new RegExp("\/uploads.*");
   var planPath = req.files[0].destination.match(pathRegexp)[0]+'/'+req.files[0].filename;
+
   Team.findOne({_id: teamData._id}).then((team) => {
+    console.log(team);
     return team.planUpdate(planPath)
   }).then((team) => {
     res.send(team)

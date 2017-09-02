@@ -75,7 +75,7 @@ userRouter.patch('/userUpdata', authenticate, (req, res) => {
   User.findByToken(token).then(user => {
     return user.userUpdata(body)
   }).then((user) => {
-    res.send();
+    res.send("更改成功");
   }).catch((e) => {
     res.status(403).send();
   })
