@@ -6,7 +6,8 @@ const nodemailer = require('nodemailer');
 const {User} = require('./models/user.js');
 const {Team} = require('./models/team.js');
 const {Post} = require('./models/post.js')
-const {Judge} = require('./models/judge.js')
+const {Point} = require('./models/point.js')
+// const {Judge} = require('./models/judge.js')
 const moment = require('moment');
 const {ObjectID} = require('mongodb')
 const {authenticate} = require('./middleware/authenticate.js')
@@ -56,6 +57,18 @@ app.get('/test', (req, res) => {
 //     })
 // })
 
+app.get('/test3', (req, res) => {
+  Point.find().populate('_teamId').then((result) => {
+    res.send(result)
+  })
+})
+
+app.get('/test4', (req, res) => {
+  Point.find({ 'points.name': { $ne : 'May'}}).then((result) => {
+    res.send(result)
+  })
+})
+
 app.patch('/updatePassword', authenticate, (req, res) => {
   var body = req.body
   User.findByToken({authToken: req.token}).then((user) => {
@@ -64,34 +77,34 @@ app.patch('/updatePassword', authenticate, (req, res) => {
 })
 
 //評審
-app.post('/teamJudge', authenticate, (req, res) => {
-  var body = req.body
-  var teamDecide = _.pick(body,['_teamId', 'firstTrial', 'reviewTrial', 'judgeComment'])
-  var {_teamId,firstTrial,reviewTrial,judgeComment} = teamDecide
-  var _judgeId = req.user._id
-  Judge.findOne({_judgeId}).then((judge) => {
-    var date = new Date()
-    // console.log(judge);
-    if (!judge) {
-      let tmp = {
-        _judgeId,
-        firstTrialDate: date,
-        reviewTrialDate: date,
-        teamDecides: [
-          {_teamId,firstTrial,reviewTrial,judgeComment}
-        ]}
-      var judge = new Judge(tmp)
-      return judge.save()
-    }
-    var judge = new Judge(judge)
-    // console.log(judge);
-    return judge.judgeDecide(teamDecide)
-  }).then((judge) => {
-    res.send(judge);
-  }).catch((e) => {
-    res.status(403).send(e)
-  })
-})
+// app.post('/teamJudge', authenticate, (req, res) => {
+//   var body = req.body
+//   var teamDecide = _.pick(body,['_teamId', 'firstTrial', 'reviewTrial', 'judgeComment'])
+//   var {_teamId,firstTrial,reviewTrial,judgeComment} = teamDecide
+//   var _judgeId = req.user._id
+//   Judge.findOne({_judgeId}).then((judge) => {
+//     var date = new Date()
+//     // console.log(judge);
+//     if (!judge) {
+//       let tmp = {
+//         _judgeId,
+//         firstTrialDate: date,
+//         reviewTrialDate: date,
+//         teamDecides: [
+//           {_teamId,firstTrial,reviewTrial,judgeComment}
+//         ]}
+//       var judge = new Judge(tmp)
+//       return judge.save()
+//     }
+//     var judge = new Judge(judge)
+//     // console.log(judge);
+//     return judge.judgeDecide(teamDecide)
+//   }).then((judge) => {
+//     res.send(judge);
+//   }).catch((e) => {
+//     res.status(403).send(e)
+//   })
+// })
 
 
 
@@ -123,7 +136,6 @@ app.patch('/updateMP4', authenticate, upload, (req, res) => {
   })
 })
 
-// app.patch('/updateMP4')
 //建立隊伍(新)
 app.post('/creatTeam', authenticate, upload, function (req, res) {
   var body = JSON.parse(req.body.teamData)
@@ -140,7 +152,10 @@ app.post('/creatTeam', authenticate, upload, function (req, res) {
   teamData.video = `${videoPath}/${videoObj[0].filename}`;
   teamData.plan = `${planPath}/${planObj[0].filename}`;
   var team = new Team(teamData)
-  team.save().then(()=>{
+  team.save().then((result)=>{
+    var point = new Point({_teamId: result._id})
+    return point.save()
+  }).then(() => {
     res.send(team)
   }).catch((e)=>{
     res.status(403).send(e)
@@ -175,15 +190,15 @@ transporter.sendMail(mailOptions, function(error, info){
 })
 
 //新建隊伍
-app.post('/newTeam', authenticate, upload, (req, res) => {
-  var body = _.pick(req.body,['teamName','title','registers','qualification','video','plan','teacher'])
-  var team = new Team(body)
-  team.save().then(()=>{
-    res.send(team)
-  }).catch((e)=>{
-    res.status(403).send(e)
-  })
-})
+// app.post('/newTeam', authenticate, upload, (req, res) => {
+//   var body = _.pick(req.body,['teamName','title','registers','qualification','video','plan','teacher'])
+//   var team = new Team(body)
+//   team.save().then(()=>{
+//     res.send(team)
+//   }).catch((e)=>{
+//     res.status(403).send(e)
+//   })
+// })
 
 //建立文章
 app.post('/newPost',verifyRole, (req, res) => {
@@ -205,6 +220,7 @@ app.post('/signup',(req, res) => {
   body.time = new Date().toString();
   var user = new User(body);
   user.save().then(() => {
+
     return user.generateAuthToken();
   }).then((token) => {
     res.header('authToken', token).send();

@@ -29,3 +29,12 @@
 "reviewTrial":40,
 "judgeComment":"asdiuayifhdsfiuhsfiu"
 }
+
+"email": "a55665939@yahoo.com.tw",
+"password": "59395939",
+"name": "kevin",
+"phone": "0923456788",
+"studentId": "V924343434",
+"department": "資工",
+"lineId": "kebirji",
+"roleId": "student"
