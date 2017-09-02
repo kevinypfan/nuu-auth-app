@@ -42,20 +42,13 @@ var storage = multer.diskStorage({
   })
 
   var upload = multer({ storage }).any()
+
 //找陣列裡東西
 app.get('/test', (req, res) => {
   Team.findOne({"registers":{$elemMatch:{"email" : "isdbfiusdfub@yahoo.com.tw"}}}).then((result)=>{
     res.send(result)
   })
 })
-
-// app.get('/test2', (req, res) => {
-//   Judge.find().populate(
-//       {'teamDecides': {$elemMatch: _teamId}}
-//     ).then((result)=>{
-//       res.send(result)
-//     })
-// })
 
 app.get('/test3', (req, res) => {
   Point.find().populate('_teamId').then((result) => {

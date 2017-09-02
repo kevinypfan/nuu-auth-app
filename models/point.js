@@ -13,12 +13,10 @@ var PointShema = new mongoose.Schema({
       ref: 'Juror'
     },
     score1: {
-      type: Number,
-      default: 0
+      type: Number
     },
     score2: {
-      type: Number,
-      default: 0
+      type: Number
     },
     comment: {
       type: String
