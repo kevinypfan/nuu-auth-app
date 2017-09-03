@@ -44,8 +44,7 @@ var UserSchema = new mongoose.Schema({
     required: true
   },
   department: {
-    type: String,
-    required: true
+    type: String
   },
   lineId: {
     type: String
@@ -70,10 +69,12 @@ UserSchema.methods.generateAuthToken = function () {
   var user = this;
   var access = user.roleId;
   var token = jwt.sign({_id: user._id.toHexString(), access},'abc123').toString();
-
+ // var test={token,access}
   user.tokens.push({access, token});
   return user.save().then(() => {
     return token
+    //  return {token,access}
+    //return test
   })
 }
 
@@ -136,6 +137,65 @@ UserSchema.methods.removeToken = function (token) {
     $pull: {
       tokens: {token}
     }
+  })
+}
+
+// UserSchema.statics.findByJuror = function (email, password) {
+//   var User = this;
+//
+//   return User.findOne({email}).then((user) => {
+//     var jurorRole = user.roleId;
+//     if (jurorRole != "juror") {
+//       return Promise.reject("你不適評審");
+//     }
+//
+//     return new Promise((resolve, reject) => {
+//       bcrypt.compare(password, user.password).then((res) => {
+//          if (res) {
+//            resolve(user);
+//          } else {
+//            reject("此密碼錯誤");
+//          }
+//        })
+//     })
+//   })
+// }
+
+UserSchema.statics.findByJuror = function (email, password) {
+  var User = this;
+
+  return User.findOne({email}).then((user) => {
+    var jurorRole = user.roleId;
+    // if (jurorRole != "juror") {
+    //
+    // }
+    switch (jurorRole) {
+      case "juror":
+      return new Promise((resolve, reject) => {
+        bcrypt.compare(password, user.password).then((res) => {
+           if (res) {
+             resolve(user);
+           } else {
+             reject("此密碼錯誤");
+           }
+         })
+      })
+        break;
+        case "admin":
+        return new Promise((resolve, reject) => {
+          bcrypt.compare(password, user.password).then((res) => {
+             if (res) {
+               resolve(user);
+             } else {
+               reject("此密碼錯誤");
+             }
+           })
+        })
+          break;
+      default:
+         return Promise.reject("你不適評審");
+    }
+
   })
 }
 

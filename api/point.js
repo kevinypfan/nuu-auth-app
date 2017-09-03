@@ -8,7 +8,7 @@ var pointRouter = express.Router();
 
 pointRouter.post('/grade', authenticate, (req, res) => {
   if (req.user.roleId !== "juror") {
-    res.status(402).send("你不是機掰裁判")
+    res.status(402).send("你不是裁判")
   } else {
     var body = _.pick(req.body, ['score1', 'comment']);
     var _teamId = req.body.teamId

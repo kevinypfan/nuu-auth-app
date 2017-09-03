@@ -46,7 +46,7 @@ var TeamSchema = new mongoose.Schema({
   }],
   qualification: {
     type: Boolean,
-    required: true
+    default: true
   },
   plan: {
     type: String,

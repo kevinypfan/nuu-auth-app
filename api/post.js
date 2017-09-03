@@ -10,7 +10,7 @@ postRouter.post('/newPost',verifyRole, (req, res) => {
    console.log(author);
   var body = _.pick(req.body,['PostId','title','content'])
   var posts = new Post(body)
-  // posts.time = new Date();
+   posts.time = new Date();
   posts.author = author;
   posts.save().then(()=>{
     res.send(posts)

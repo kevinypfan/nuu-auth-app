@@ -4,6 +4,7 @@ const {User} = require('../models/user.js');
 const {ObjectID} = require('mongodb')
 const {authenticate} = require('../middleware/authenticate.js')
 const {verifyRole} = require('../middleware/authenticate.js')
+const {verifyJuror} = require('../middleware/authenticate.js')
 
 var userRouter = express.Router();
 
@@ -36,7 +37,7 @@ userRouter.post('/signup',(req, res) => {
   })
 });
 
-//登入
+//登入OK
 userRouter.post('/signin', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   User.findByCredentials(body.email, body.password).then((user) => {
@@ -49,13 +50,28 @@ userRouter.post('/signin', (req, res) => {
   })
 })
 
+//評審登入用
+userRouter.post('/jurorSignin', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  User.findByJuror(body.email, body.password).then((user) => {
+    return user.generateAuthToken()
+    .then((token) => {
+      res.header('authToken', token).send();
+    })
+  }).catch((e) => {
+    res.status(403).send("查無此評審");
+  })
+})
+
+
+
 userRouter.get('/me', authenticate, (req, res) => {
   var user = req.user
   var objUser = user.toJson()
   res.send(objUser);
 })
 //測試驗證用
-userRouter.get('/meverfy', verifyRole, (req, res) => {
+userRouter.get('/meverfy', verifyJuror, (req, res) => {
   var user = req.user
   var objUser = user.toJson()
   res.send(objUser);
@@ -67,7 +83,7 @@ userRouter.delete('/logout', authenticate, (req, res) => {
   }).catch(() => {
     res.status(400).send();
   })
-});
+})
 
 userRouter.patch('/userUpdata', authenticate, (req, res) => {
   var body = _.pick(req.body, ['name','phone','studentId','department','lineId'])

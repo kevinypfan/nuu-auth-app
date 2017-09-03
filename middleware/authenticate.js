@@ -30,4 +30,22 @@ var verifyRole = (req, res, next)=>{
     res.status(401).send();
   })
 }
-module.exports = {authenticate,verifyRole};
+
+var verifyJuror = (req, res, next) => {
+  var token = req.header('authToken');
+  User.findByToken(token).then(user => {
+    // console.log(user.tokens[0].access);
+    var roleJuror = user.tokens[0].access;
+    if (roleJuror != "juror") {
+      return Promise.reject();
+    }
+      req.user = user;
+      req.token = token;
+      //console.log(req.user.roleId);
+      next();
+  }).catch(()=>{
+    res.status(401).send("你不是評審");
+  })
+}
+
+module.exports = {authenticate,verifyRole,verifyJuror};
