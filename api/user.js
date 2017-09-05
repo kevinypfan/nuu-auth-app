@@ -23,6 +23,7 @@ userRouter.patch('/updatePassword', authenticate, (req, res) => {
   })
 })
 
+
 //註冊
 userRouter.post('/signup',(req, res) => {
   var body = _.pick(req.body, ['email', 'password', 'name', 'phone', 'studentId', 'department', 'lineId', 'roleId'])

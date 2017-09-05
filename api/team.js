@@ -56,6 +56,13 @@ teamRouter.get('/getAllTeam',verifyRole,(req,res)=>{
     })
 })
 
+teamRouter.patch('/setQualification', verifyRole, (req, res) => {
+    var qualification = req.body.qualification
+  Team.findOneAndUpdate({_id: req.body._teamId},{$set:{qualification}})
+    .then((result) => {
+      res.send(qualification)
+    })
+})
 
 //建立隊伍(新)
 teamRouter.post('/creatTeam', authenticate, upload, function (req, res) {
