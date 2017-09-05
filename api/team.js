@@ -37,10 +37,20 @@ teamRouter.patch('/updateMP4', authenticate, upload, (req, res) => {
   })
 })
 
-teamRouter.get('/getTeam',verifyRole,(req,res)=>{
+teamRouter.get('/getUsableTeam', (req,res) => {
+  Team.find().then((result)=>{
+    var data = result.filter((r) => {
+      return !r.qualification
+    })
+    res.send(data)
+  }).catch((e)=>{
+    res.status(403).send(e)
+  })
+})
+
+teamRouter.get('/getAllTeam',verifyRole,(req,res)=>{
     Team.find().then((result)=>{
-          console.log(result);
-          res.send(result)
+      res.send(result)
     }).catch((e)=>{
       res.status(403).send(e)
     })

@@ -6,6 +6,33 @@ const {ObjectID} = require('mongodb')
 
 var pointRouter = express.Router();
 
+pointRouter.get('/jurorGrade', authenticate, (req, res) => {
+  var _jurorId = req.user._id
+  Point.find()
+    .populate({
+        path: '_teamId',
+        select: ['teamName','teacher','registers','video', 'plan','qualification','leader']
+      })
+    .populate({
+        path: 'points._jurorId',
+        select: ['email','name','phone','studentId','department','lineId','roleId']
+      })
+    .then((result) => {
+      console.log(JSON.stringify(result,null,1));
+      return result.map((r) => {
+        r.points = r.points.filter((a) => {
+          return a._jurorId._id.toHexString() == _jurorId
+        })
+        return r
+      })
+    }).then((result) => {
+      res.send(result)
+    }).catch((e) => {
+      res.status(403).send(e)
+    })
+})
+
+
 pointRouter.post('/grade', authenticate, (req, res) => {
   if (req.user.roleId !== "juror") {
     res.status(402).send("你不是裁判")
@@ -26,22 +53,51 @@ pointRouter.post('/grade', authenticate, (req, res) => {
 
 pointRouter.get('/noGrade', authenticate, (req, res) => {
   var _jurorId = req.user._id
-  Point.find({'points._jurorId':{$ne: _jurorId}}).populate('_teamId').populate('points._jurorId').then((result) => {
+  Point.find({'points._jurorId':{$ne: _jurorId}})
+  .populate({
+      path: '_teamId',
+      select: ['teamName','teacher','registers','video', 'plan','qualification','leader']
+    })
+  .populate({
+      path: 'points._jurorId',
+      select: ['email','name','phone','studentId','department','lineId','roleId']
+    }).then((result) => {
     if (result.length == 0) {
       res.status(403).send("您都評過分數囉！")
     } else {
-      res.send(result)
+      console.log(result);
+      var data = result.map(m => {
+        m.points = []
+        return m
+      })
+      res.send(data)
     }
+  },(e) => {
+    res.status(403).send("err")
   })
 })
 
 pointRouter.get('/haveGrade', authenticate, (req, res) => {
   var _jurorId = req.user._id
-  Point.find({'points':{$elemMatch: {_jurorId}}}).populate('_teamId').populate('points._jurorId').then((result) => {
+  Point.find({'points':{$elemMatch: {_jurorId}}})
+  .populate({
+      path: '_teamId',
+      select: ['teamName','teacher','registers','video', 'plan','qualification','leader']
+    })
+  .populate({
+      path: 'points._jurorId',
+      select: ['email','name','phone','studentId','department','lineId','roleId']
+    }).then((result) => {
     if (result.length == 0) {
       res.status(403).send("您還沒評過分數喔！")
     } else {
-      res.send(result)
+      var data = result.map((r) => {
+        r.points = r.points.filter((a) => {
+          return a._jurorId._id.toHexString() == _jurorId
+        })
+        return r
+      })
+      res.send(data)
     }
   })
 })
