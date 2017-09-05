@@ -6,12 +6,15 @@ const {User} = require('./models/user.js');
 const {Team} = require('./models/team.js');
 const {Post} = require('./models/post.js')
 const {Point} = require('./models/point.js')
+const {System} = require('./models/system.js');
+
 const moment = require('moment');
 
 var userRouter = require('./api/user.js')
 var postRouter = require('./api/post.js')
 var teamRouter = require('./api/team.js')
 var pointRouter = require('./api/point.js')
+var systemRouter = require('./api/system.js')
 
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost:27017/NuuGBrain', { useMongoClient: true });
@@ -23,12 +26,14 @@ app.use(express.static(__dirname))
 app.use(bodyParser.urlencoded({
     extended: true
 }));
- 
+
 app.use('/uploads', express.static('uploads'));
 app.use('/api/user', userRouter)
 app.use('/api/post', postRouter)
 app.use('/api/team', teamRouter)
 app.use('/api/point', pointRouter)
+app.use('/api/system', systemRouter)
+
 
 // app.all('/*', function(req, res, next) {
 //   res.header("Access-Control-Allow-Origin", "*");
@@ -87,5 +92,5 @@ transporter.sendMail(mailOptions, function(error, info){
 app.listen(3000, () => {
   var date = Date.now()
   console.log('start up post 3000');
-  console.log(moment(date).format("YYYYMMDD_HHmmss"));
+  console.log(moment(date).format("YYYY-MM-DD"));
 })

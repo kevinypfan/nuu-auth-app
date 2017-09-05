@@ -1,0 +1,32 @@
+{
+  "gameTitle":"金頭腦比賽",
+"email":"qweqwe@gmail.com",
+"score1Percent":"30",
+"score2Percent":"20",
+"registrationStart":"2017-09-05",
+"registrationEnd":"2017-09-06",
+"firstTrialStart":"2017-09-07",
+"finalTrialStart":"2017-09-08"
+}
+
+
+{
+  "teamName": "NUUEqweqweqqweqweE",
+  "title": "夢想聯大隊EE",
+  "qualification": false,
+  "teacher": "張老師",
+  "leader": {
+    "name": "qweq",
+    "email": "qwe@girkgig.asoidj"
+  },
+  "registers": [{
+    "email": "qwe@yahoo.com.tw",
+    "name": "fsdfsdfsdfsdf"
+  }, {
+    "email": "a55665939@yahoo.com.tw",
+    "name": "sadasdasdsad"
+  }, {
+    "email": "abc123@yahoo.com.tw",
+    "name": "ertertertert"
+  }]
+}

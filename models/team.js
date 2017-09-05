@@ -6,7 +6,7 @@ var TeamSchema = new mongoose.Schema({
     type: String,
     trim: true,
     minlength: 1,
-    // unique: true,
+    unique: true,
     required: true
   },
   title: {
@@ -46,7 +46,7 @@ var TeamSchema = new mongoose.Schema({
   }],
   qualification: {
     type: Boolean,
-    default: true
+    default: false
   },
   plan: {
     type: String,

@@ -1,11 +1,16 @@
 const mongoose = require('mongoose');
-
+const moment = require('moment-timezone');
+const _ = require('lodash');
 var SystemSchema = new mongoose.Schema({
-  carousel: [
+  name: {
+    type: String,
+    default: "systemArg"
+  },
+  carousel: [{
     imgPath: {
       type: String
     }
-  ],
+  }],
   successMail: {
     type: String
   },
@@ -41,8 +46,9 @@ var SystemSchema = new mongoose.Schema({
   }
 })
 
+
+
+
 var System = mongoose.model('System',SystemSchema)
 
-module.exports = {
-  System
-}
+module.exports = {System}

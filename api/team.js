@@ -37,6 +37,16 @@ teamRouter.patch('/updateMP4', authenticate, upload, (req, res) => {
   })
 })
 
+teamRouter.get('/getTeam',verifyRole,(req,res)=>{
+    Team.find().then((result)=>{
+          console.log(result);
+          res.send(result)
+    }).catch((e)=>{
+      res.status(403).send(e)
+    })
+})
+
+
 //建立隊伍(新)
 teamRouter.post('/creatTeam', authenticate, upload, function (req, res) {
   var body = JSON.parse(req.body.teamData)
