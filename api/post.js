@@ -8,7 +8,7 @@ var postRouter = express.Router();
 postRouter.post('/newPost',verifyRole, (req, res) => {
    var author = req.user.name;
    console.log(author);
-  var body = _.pick(req.body,['PostId','title','content'])
+  var body = _.pick(req.body,['title','content'])
   var posts = new Post(body)
    posts.time = new Date();
   posts.author = author;
@@ -17,6 +17,15 @@ postRouter.post('/newPost',verifyRole, (req, res) => {
   }).catch((e)=>{
     res.status(403).send(e)
   })
+})
+
+
+postRouter.get('/getAllPost',verifyRole,(req,res)=>{
+    Post.find().then((result)=>{
+      res.send(result)
+    }).catch((e)=>{
+      res.status(403).send(e)
+    })
 })
 
 module.exports = postRouter;

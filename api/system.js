@@ -18,8 +18,8 @@ systemRouter.post('/sysArgument',verifyRole,(req,res)=>{
 
 systemRouter.get('/getArg',verifyRole,(req,res)=>{
   System.find({'name':"systemArg"}).then((result)=>{
-    console.log();
-    if(!result){
+    console.log(result);
+    if(result == null){
       res.status(404).send("取得失敗")
     }
     else {

@@ -51,7 +51,8 @@ var UserSchema = new mongoose.Schema({
   },
   roleId: {
     type: String,
-    required: true
+    required: true,
+    default:"student"
   },
   tokens: [{
     access: {
