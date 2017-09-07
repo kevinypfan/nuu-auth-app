@@ -4,7 +4,7 @@ const validator = require('validator');
 const moment = require('moment-timezone');
 var PostSchema = new mongoose.Schema({
   PostId: {
-    type: Number
+    type: String
   },
   title: {
     type: String,

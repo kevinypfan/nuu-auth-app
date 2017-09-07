@@ -2,7 +2,7 @@ const {verifyRole} = require('../middleware/authenticate.js')
 const express = require('express');
 const _ = require('lodash');
 const {Post} = require('../models/post.js');
-
+const {ObjectID} = require('mongodb')
 var postRouter = express.Router();
 
 postRouter.post('/newPost',verifyRole, (req, res) => {
@@ -23,6 +23,38 @@ postRouter.post('/newPost',verifyRole, (req, res) => {
 postRouter.get('/getAllPost',verifyRole,(req,res)=>{
     Post.find().then((result)=>{
       res.send(result)
+    }).catch((e)=>{
+      res.status(403).send(e)
+    })
+})
+
+postRouter.get('/getSomePostFfront/:counter',(req,res)=>{
+    var cnum = req.params.counter
+    var a =  parseInt(cnum);
+    console.log(typeof(a));
+    Post.find().limit(a).then((result)=>{
+      res.send(result)
+    }).catch((e)=>{
+      res.status(403).send(e)
+    })
+})
+
+postRouter.get('/getAllPostFfront',(req,res)=>{
+    Post.find().then((result)=>{
+      res.send(result)
+    }).catch((e)=>{
+      res.status(403).send(e)
+    })
+})
+
+
+postRouter.patch('/updatePost', verifyRole, (req, res) => {
+    var title = req.body.title
+    var content = req.body.content
+
+  Post.findOneAndUpdate({_id: req.body.PostId},{$set:{title,content}})
+    .then((result) => {
+      res.send("更新成功")
     }).catch((e)=>{
       res.status(403).send(e)
     })

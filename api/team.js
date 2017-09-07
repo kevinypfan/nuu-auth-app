@@ -9,6 +9,16 @@ const {verifyRole} = require('../middleware/authenticate.js')
 var {storage, upload} = require('../modules/multerStorage.js')
 var teamRouter = express.Router();
 
+var options = {
+  // 是否顯示被隱藏的細節
+  showHidden: true,
+  // 是否著色
+  colors: true,
+  // 在該物件中遞迴向下檢查的層數
+  // depth: 1,
+};
+console.dir({verifyRole},options);
+
 teamRouter.patch('/updatePDF', authenticate, upload, (req, res) => {
   var teamData = JSON.parse(req.body.teamData)
   var pathRegexp = new RegExp("\/uploads.*");
