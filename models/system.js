@@ -4,7 +4,8 @@ const _ = require('lodash');
 var SystemSchema = new mongoose.Schema({
   name: {
     type: String,
-    default: "systemArg"
+    default: "systemArg",
+    unique: true
   },
   carousel: [{
     imgPath: {
@@ -46,7 +47,11 @@ var SystemSchema = new mongoose.Schema({
   }
 })
 
-
+SystemSchema.methods.pushGamePath = function (gamePath) {
+  var system = this;
+  console.log(system);
+  return system.update({$set: {gamePath}})
+}
 
 
 var System = mongoose.model('System',SystemSchema)

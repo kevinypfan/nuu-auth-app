@@ -24,6 +24,31 @@
 
 
 {
+"teamName" : "y機d51rdfgd",
+"title" : "y爛雞ajgr51hg",
+"qualification" : false,
+"teacher" : "楊至善",
+"registers" : [
+    {
+        "email" : "asdf@yahoo.com.tw",
+        "name" : "fsdfsdfsdfsdf"
+    },
+    {
+        "email" : "a55665939@yahoo.com.tw",
+        "name" : "sadasdasdsad"
+    },
+    {
+        "email" : "abc123@yahoo.com.tw",
+        "name" : "ertertertert"
+    }
+],
+"leader": {
+  "email": "qwe@asd.asd",
+  "name":"kasdji"
+}
+}
+
+{
 "_teamId":"59a952d9e31f23d3e473027b",
 "firstTrial":30,
 "reviewTrial":40,
