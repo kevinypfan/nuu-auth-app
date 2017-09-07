@@ -1,10 +1,12 @@
 const express = require('express');
 const _ = require('lodash');
 const {User} = require('../models/user.js');
+const {System} = require('../models/system.js');
 const {ObjectID} = require('mongodb')
 const {authenticate} = require('../middleware/authenticate.js')
 const {verifyRole} = require('../middleware/authenticate.js')
 const {verifyJuror} = require('../middleware/authenticate.js')
+var { transporter, successSignup, successCreate, sendEmail } = require('../modules/mailerMod.js')
 
 var userRouter = express.Router();
 
@@ -29,14 +31,22 @@ userRouter.post('/signup',(req, res) => {
   var body = _.pick(req.body, ['email', 'password', 'name', 'phone', 'studentId', 'department', 'lineId', 'roleId'])
   body.time = new Date().toString();
   var user = new User(body);
-  user.save().then(() => {
-    return user.generateAuthToken();
+  user.save().then((user) => {
+    return System.findOne({'name':"systemArg"})
+  }).then((system) => {
+    successSignup.html = system.successSignup
+    successSignup.to = body.email
+    return sendEmail(successSignup)
+  }).then((result) => {
+    return user.generateAuthToken()
   }).then((token) => {
     res.header('authToken', token).send();
   }).catch((e) => {
     res.status(400).send(e);
   })
 });
+
+// res.header('authToken', token).send('OK');
 
 //登入OK
 userRouter.post('/signin', (req, res) => {

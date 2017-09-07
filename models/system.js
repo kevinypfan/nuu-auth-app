@@ -12,10 +12,10 @@ var SystemSchema = new mongoose.Schema({
       type: String
     }
   }],
-  successMail: {
+  successSignup: {
     type: String
   },
-  failMail: {
+  successCreate: {
     type: String
   },
   gameTitle: {
@@ -52,7 +52,6 @@ SystemSchema.methods.pushGamePath = function (gamePath) {
   console.log(system);
   return system.update({$set: {gamePath}})
 }
-
 
 var System = mongoose.model('System',SystemSchema)
 

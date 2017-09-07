@@ -2,9 +2,11 @@ const express = require('express');
 const _ = require('lodash');
 const {Team} = require('../models/team.js');
 const {Point} = require('../models/point.js');
+const {System} = require('../models/system.js');
 const {ObjectID} = require('mongodb')
 const {authenticate} = require('../middleware/authenticate.js')
 const {verifyRole} = require('../middleware/authenticate.js')
+var { successCreate, sendEmail } = require('../modules/mailerMod.js')
 
 var {storage, upload} = require('../modules/multerStorage.js')
 var teamRouter = express.Router();
@@ -84,7 +86,6 @@ teamRouter.post('/creatTeam', authenticate, upload, function (req, res) {
   var planObj = req.files.filter((p)=>{
     return p.mimetype == 'application/pdf'
   })
-  console.log(req.files);
   var pathRegexp = new RegExp("\/uploads.*");
   var videoPath = videoObj[0].destination.match(pathRegexp)[0]
   var planPath = planObj[0].destination.match(pathRegexp)[0]
@@ -94,8 +95,14 @@ teamRouter.post('/creatTeam', authenticate, upload, function (req, res) {
   team.save().then((result)=>{
     var point = new Point({_teamId: result._id})
     return point.save()
-  }).then(() => {
-    res.send(team)
+  }).then((result) => {
+    return System.findOne({'name':"systemArg"})
+  }).then((system) => {
+    successCreate.to = teamData.leader.email
+    successCreate.html = system.successCreate
+    return sendEmail(successCreate)
+  }).then((success) => {
+    res.send("報名成功")
   }).catch((e)=>{
     res.status(403).send(e)
   })

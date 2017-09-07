@@ -47,7 +47,15 @@ postRouter.get('/getAllPostFfront',(req,res)=>{
     })
 })
 
-
+postRouter.delete('/deletePost', verifyRole, (req, res) => {
+    var pid = req.body.PostId
+    console.log(pid);
+     Post.findOneAndRemove({_id: pid}).then((result) => {
+      res.send("刪除成功")
+    }).catch((e)=>{
+      res.status(403).send(e)
+    })
+})
 postRouter.patch('/updatePost', verifyRole, (req, res) => {
     var title = req.body.title
     var content = req.body.content
