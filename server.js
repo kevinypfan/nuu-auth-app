@@ -19,7 +19,7 @@ var pointRouter = require('./api/point.js')
 var systemRouter = require('./api/system.js')
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/NuuGBrain', { useMongoClient: true });
+mongoose.connect(process.env.MONGODB_URL, { useMongoClient: true });
 
 var app = express();
 app.use(bodyParser.json());
@@ -71,13 +71,13 @@ app.post('/sendMail',(req,res)=>{
   var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'uranoni777@gmail.com',
-    pass: 'lucky909075'
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS
   }
 });
 
 var mailOptions = {
-  from: 'uranoni777@gmail.com',
+  from: process.env.GMAIL_USER,
   to: 'kg650034@gmail.com',
   subject: 'HI~哲歌 using Node.js',
   html:'<h1>wwwwwwwwwwwwwwwwwwwwwwwwww</h1><br><h1>wwwwwwwwwwwwwwwwwwwwwwwwww</h1>'
@@ -94,7 +94,7 @@ transporter.sendMail(mailOptions, function(error, info){
 })
 
 
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
   var date = Date.now()
-  console.log( `[${moment(date).format("YYYY-MM-DD HH:MM:SS")}]--> start up post 3000` );
+  console.log( `[${moment(date).format("YYYY-MM-DD HH:MM:SS")}]--> start up post ${process.env.PORT}` );
 })

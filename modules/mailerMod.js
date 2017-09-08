@@ -1,27 +1,26 @@
 const nodemailer = require('nodemailer');
-console.log(process.env.GMAIL_USER);
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'nuuGbrainDev@gmail.com',
-    pass: 'nuuPWD123'
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS
   }
 })
 
 var successSignup = {
-  from: 'nuuGbrainDev@gmail.com',
+  from: process.env.GMAIL_USER,
   subject: '聯合大學金頭腦成功註冊通知信'
 };
 
 var successCreate = {
-from: 'nuuGbrainDev@gmail.com',
+from: process.env.GMAIL_USER,
 subject: '聯合大學金頭腦建立隊伍通知信'
 };
 
 
 var forgotPassword = {
-  from: 'nuuGbrainDev@gmail.com',
+  from: process.env.GMAIL_USER,
   subject: '聯合大學金頭腦忘記密碼通知信'
 }
 
