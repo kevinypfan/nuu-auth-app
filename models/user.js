@@ -63,8 +63,27 @@ var UserSchema = new mongoose.Schema({
       type: String,
       required: true
     }
-  }]
+  }],
+  reset: {
+    token: {
+      type: String
+    },
+    expire: {
+      type: Date
+    }
+  }
 });
+
+
+UserSchema.methods.generateResetToken = function (token, expire) {
+  var user = this;
+  return user.update({
+    $set:{
+    reset: { token, expire }
+  }}).then(() => {
+    return {token, user}
+  })
+}
 
 UserSchema.methods.generateAuthToken = function () {
   var user = this;

@@ -61,6 +61,9 @@ app.get('/test4', (req, res) => {
   })
 })
 
+app.get('/test2', (req, res) => {
+  res.send(req.headers.host)
+})
 //寄郵件
 app.post('/sendMail',(req,res)=>{
   var transporter = nodemailer.createTransport({
@@ -91,6 +94,5 @@ transporter.sendMail(mailOptions, function(error, info){
 
 app.listen(3000, () => {
   var date = Date.now()
-  console.log('start up post 3000');
-  console.log(moment(date).format("YYYY-MM-DD"));
+  console.log( `[${moment(date).format("YYYY-MM-DD HH:MM:SS")}]--> start up post 3000` );
 })

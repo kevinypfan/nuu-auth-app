@@ -19,7 +19,6 @@ var options = {
   // 在該物件中遞迴向下檢查的層數
   // depth: 1,
 };
-console.dir({verifyRole},options);
 
 teamRouter.patch('/updatePDF', authenticate, upload, (req, res) => {
   var teamData = JSON.parse(req.body.teamData)

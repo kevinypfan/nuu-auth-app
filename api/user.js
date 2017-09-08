@@ -6,9 +6,68 @@ const {ObjectID} = require('mongodb')
 const {authenticate} = require('../middleware/authenticate.js')
 const {verifyRole} = require('../middleware/authenticate.js')
 const {verifyJuror} = require('../middleware/authenticate.js')
-var { transporter, successSignup, successCreate, sendEmail } = require('../modules/mailerMod.js')
-
+var { successSignup, sendEmail, forgotPassword, transporter } = require('../modules/mailerMod.js')
+var { randomToken, forgotMail } = require('../modules/forgotModules.js')
 var userRouter = express.Router();
+
+
+userRouter.post('/forgotPassword', (req, res) => {
+  var body = _.pick(req.body, ['email'])
+  User.findOne({email:body.email}).then((user) => {
+    if (!user) {
+      res.status(404).send('沒有此用戶')
+    } else {
+      return user
+    }
+  }).then((user) => {
+    var token = randomToken();
+    var expire = Date.now() + 60000
+    return user.generateResetToken(token, expire)
+  }).then(({token, user}) => {
+    forgotPassword.to = user.email;
+    forgotPassword.html = forgotMail(req.headers.host, token);
+    return sendEmail(forgotPassword)
+  }).then((result) => {
+    res.send(result)
+  }).catch((e) => {
+    res.status(403).send(e)
+  })
+})
+
+userRouter.get('/forgotPassword/:token', (req, res) => {
+  var token = req.params.token
+  User.findOne({
+    'reset.token': token,
+    'reset.expire':{ $gt: Date.now() }
+  }).then((user) => {
+    if (!user) {
+      return Promise.reject("時間超時獲多次請求，請重新請求或找最新的通知信")
+    }
+    res.send(user)
+  }).catch((e) => {
+    res.status(404).send(e)
+  })
+})
+
+userRouter.patch('/forgotPassword/:token', (req, res) => {
+  var newPassword = req.body.newPassword
+  User.findOne({
+    'reset.token': req.params.token,
+    'reset.expire':{ $gt: Date.now() }
+  }).then((user)=> {
+    if (!user) {
+      return Promise.reject("時間超時獲多次請求，請重新請求或找最新的通知信")
+    }
+    user.password = newPassword
+    user.reset.token = undefined
+    user.reset.expire = undefined
+    return user.save()
+  }).then((user) => {
+    res.send(user)
+  }).catch((e) => {
+    res.status(403).send()
+  })
+})
 
 userRouter.patch('/updatePassword', authenticate, (req, res) => {
   var body = req.body
@@ -38,6 +97,7 @@ userRouter.post('/signup',(req, res) => {
     successSignup.to = body.email
     return sendEmail(successSignup)
   }).then((result) => {
+    console.log(result);
     return user.generateAuthToken()
   }).then((token) => {
     res.header('authToken', token).send();
