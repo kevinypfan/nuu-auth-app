@@ -1,14 +1,16 @@
+require('./config/config.js')
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
+const moment = require('moment');
+
 const {User} = require('./models/user.js');
 const {Team} = require('./models/team.js');
 const {Post} = require('./models/post.js')
 const {Point} = require('./models/point.js')
 const {System} = require('./models/system.js');
-
-const moment = require('moment');
 
 var userRouter = require('./api/user.js')
 var postRouter = require('./api/post.js')
