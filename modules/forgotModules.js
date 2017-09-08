@@ -14,6 +14,12 @@ var forgotMail = (host, token) => {
   )
 }
 
+var passwordUpdatedMail = (email) => {
+  return (
+    `<h3>${email} 您好！您的密碼已更新了</h3>
+    <p>這是通知您密碼已成功更新的信件</p>`
+  )
+}
 
 
-module.exports = { randomToken, forgotMail }
+module.exports = { randomToken, forgotMail, passwordUpdatedMail }

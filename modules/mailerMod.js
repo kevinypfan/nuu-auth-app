@@ -18,10 +18,14 @@ from: process.env.GMAIL_USER,
 subject: '聯合大學金頭腦建立隊伍通知信'
 };
 
-
 var forgotPassword = {
   from: process.env.GMAIL_USER,
   subject: '聯合大學金頭腦忘記密碼通知信'
+}
+
+var updatePassword = {
+  from: process.env.GMAIL_USER,
+  subject: '聯合大學金頭腦密碼已更改通知信'
 }
 
 var sendEmail = function (payload) {
@@ -38,4 +42,4 @@ var sendEmail = function (payload) {
 }
 
 
-module.exports = { transporter, successSignup, successCreate, sendEmail, forgotPassword}
+module.exports = { transporter, successSignup, successCreate, sendEmail, forgotPassword, updatePassword}

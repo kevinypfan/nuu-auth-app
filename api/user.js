@@ -6,14 +6,14 @@ const {ObjectID} = require('mongodb')
 const {authenticate} = require('../middleware/authenticate.js')
 const {verifyRole} = require('../middleware/authenticate.js')
 const {verifyJuror} = require('../middleware/authenticate.js')
-var { successSignup, sendEmail, forgotPassword, transporter } = require('../modules/mailerMod.js')
-var { randomToken, forgotMail } = require('../modules/forgotModules.js')
+var { successSignup, sendEmail, forgotPassword, updatePassword } = require('../modules/mailerMod.js')
+var { randomToken, forgotMail, passwordUpdatedMail } = require('../modules/forgotModules.js')
 var userRouter = express.Router();
 
 
 userRouter.post('/forgotPassword', (req, res) => {
   var body = _.pick(req.body, ['email'])
-  User.findOne({email:body.email}).then((user) => {
+  User.findOne({email: body.email}).then((user) => {
     if (!user) {
       res.status(404).send('沒有此用戶')
     } else {
@@ -63,7 +63,11 @@ userRouter.patch('/forgotPassword/:token', (req, res) => {
     user.reset.expire = undefined
     return user.save()
   }).then((user) => {
-    res.send(user)
+    updatePassword.to = user.email
+    updatePassword.html = passwordUpdatedMail(user.email)
+    return sendEmail(updatePassword)
+  }).then((result) => {
+    res.send(result)
   }).catch((e) => {
     res.status(403).send()
   })
@@ -78,7 +82,11 @@ userRouter.patch('/updatePassword', authenticate, (req, res) => {
     console.log(user);
     return user.save()
   }).then((user) => {
-    res.send(user)
+    updatePassword.to = user.email
+    updatePassword.html = passwordUpdatedMail(user.email)
+    return sendEmail(updatePassword)
+  }).then((result) => {
+    res.send(result)
   }).catch((err) => {
     res.status(403).send(err)
   })
