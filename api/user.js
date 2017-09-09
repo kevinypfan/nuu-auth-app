@@ -99,19 +99,36 @@ userRouter.post('/signup',(req, res) => {
   body.time = new Date().toString();
   var user = new User(body);
   user.save().then((user) => {
-    return System.findOne({'name':"systemArg"})
-  }).then((system) => {
+    return Promise.all([user.generateAuthToken(), System.findOne({'name':"systemArg"})])
+  }).then(([ token, system ]) => {
     successSignupMail.html = system.successSignup
     successSignupMail.to = body.email
-    return sendEmail(successSignupMail)
-  }).then((result) => {
-    return user.generateAuthToken()
-  }).then((token) => {
+    sendEmail(successSignupMail)
     res.header('authToken', token).send();
   }).catch((e) => {
     res.status(400).send(e);
   })
 });
+
+// userRouter.post('/signup',(req, res) => {
+//   var body = _.pick(req.body, ['email', 'password', 'name', 'phone', 'studentId', 'department', 'lineId', 'roleId'])
+//   body.time = new Date().toString();
+//   var user = new User(body);
+//   user.save().then((user) => {
+//     return System.findOne({'name':"systemArg"})
+//   }).then((system) => {
+//     successSignupMail.html = system.successSignup
+//     successSignupMail.to = body.email
+//     return sendEmail(successSignupMail)
+//   }).then((result) => {
+//     return user.generateAuthToken()
+//   }).then((token) => {
+//     res.header('authToken', token).send();
+//   }).catch((e) => {
+//     res.status(400).send(e);
+//   })
+// });
+
 
 // res.header('authToken', token).send('OK');
 
