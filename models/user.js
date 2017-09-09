@@ -40,8 +40,7 @@ var UserSchema = new mongoose.Schema({
     default: moment().tz("Asia/Taipei")
   },
   studentId: {
-    type: String,
-    required: true
+    type: String
   },
   department: {
     type: String

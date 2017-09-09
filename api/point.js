@@ -11,7 +11,7 @@ pointRouter.get('/jurorGrade', authenticate, (req, res) => {
   Point.find()
     .populate({
         path: '_teamId',
-        select: ['teamName','teacher','registers','video', 'plan','qualification','leader']
+        select: ['teamName','teacher','registers','video', 'plan','qualification','leader','title']
       })
     .populate({
         path: 'points._jurorId',
@@ -34,6 +34,25 @@ pointRouter.get('/jurorGrade', authenticate, (req, res) => {
 
 
 pointRouter.post('/grade', authenticate, (req, res) => {
+  if (req.user.roleId !== "juror") {
+    res.status(402).send("你不是裁判")
+  } else {
+    var body = _.pick(req.body, ['score1', 'comment']);
+    var _teamId = req.body.teamId
+    Point.findOne({_teamId}).then((point) => {
+      return point.checkFirst(req.user._id)
+    }).then((point) => {
+      return point.grade(body, req.user._id)
+    }).then((point)=>{
+      res.send(point)
+    }).catch((e) => {
+      res.status(403).send(e)
+    })
+  }
+})
+
+//第二次評分
+pointRouter.patch('/grade', authenticate, (req, res) => {
   if (req.user.roleId !== "juror") {
     res.status(402).send("你不是裁判")
   } else {

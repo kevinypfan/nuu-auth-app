@@ -54,6 +54,23 @@ systemRouter.post('/sysArgument',verifyRole,(req,res)=>{
   })
 })
 
+systemRouter.get('/getSuccessArg',verifyRole,(req,res)=>{
+  System.find({'name':"systemArg"}).then((result)=>{
+    // console.log(result);
+    if(result == null){
+      res.status(404).send("取得失敗")
+    }
+    else {
+       var finlresult = new Object();
+       finlresult.successCreate = result[0].successCreate;
+       finlresult.successSignup = result[0].successSignup;
+
+      console.log(finlresult)
+      res.send(finlresult)
+    }
+  })
+})
+
 systemRouter.get('/getArg',verifyRole,(req,res)=>{
   System.find({'name':"systemArg"}).then((result)=>{
     console.log(result);
