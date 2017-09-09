@@ -34,6 +34,7 @@ userRouter.post('/forgotPassword', (req, res) => {
   })
 })
 
+//可用可不用
 userRouter.get('/forgotPassword/:token', (req, res) => {
   var token = req.params.token
   User.findOne({
@@ -48,6 +49,7 @@ userRouter.get('/forgotPassword/:token', (req, res) => {
     res.status(404).send(e)
   })
 })
+
 
 userRouter.patch('/forgotPassword/:token', (req, res) => {
   var newPassword = req.body.newPassword
