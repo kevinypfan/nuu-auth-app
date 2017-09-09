@@ -5,7 +5,7 @@ var randomToken = () => {
   return token.toString('hex')
 }
 
-var forgotMail = (host, token) => {
+var forgotHtml = (host, token) => {
   return (
     `<h3>您或者某人對此請求重製密碼</h3>
     <p>請點擊下方連結或黏貼到瀏覽器以便更新密碼</p>
@@ -14,7 +14,7 @@ var forgotMail = (host, token) => {
   )
 }
 
-var passwordUpdatedMail = (email) => {
+var passwordUpdatedHtml = (email) => {
   return (
     `<h3>${email} 您好！您的密碼已更新了</h3>
     <p>這是通知您密碼已成功更新的信件</p>`
@@ -22,4 +22,4 @@ var passwordUpdatedMail = (email) => {
 }
 
 
-module.exports = { randomToken, forgotMail, passwordUpdatedMail }
+module.exports = { randomToken, forgotHtml, passwordUpdatedHtml }

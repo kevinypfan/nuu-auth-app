@@ -6,7 +6,7 @@ const {System} = require('../models/system.js');
 const {ObjectID} = require('mongodb')
 const {authenticate} = require('../middleware/authenticate.js')
 const {verifyRole} = require('../middleware/authenticate.js')
-var { successCreate, sendEmail } = require('../modules/mailerMod.js')
+var { successCreateMail, sendEmail } = require('../modules/mailerMod.js')
 
 var {storage, upload} = require('../modules/multerStorage.js')
 var teamRouter = express.Router();
@@ -97,9 +97,9 @@ teamRouter.post('/creatTeam', authenticate, upload, function (req, res) {
   }).then((result) => {
     return System.findOne({'name':"systemArg"})
   }).then((system) => {
-    successCreate.to = teamData.leader.email
-    successCreate.html = system.successCreate
-    return sendEmail(successCreate)
+    successCreateMail.to = teamData.leader.email
+    successCreateMail.html = system.successCreate
+    return sendEmail(successCreateMail)
   }).then((success) => {
     res.send("報名成功")
   }).catch((e)=>{

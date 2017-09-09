@@ -8,22 +8,22 @@ var transporter = nodemailer.createTransport({
   }
 })
 
-var successSignup = {
+var successSignupMail = {
   from: process.env.GMAIL_USER,
   subject: '聯合大學金頭腦成功註冊通知信'
 };
 
-var successCreate = {
+var successCreateMail = {
 from: process.env.GMAIL_USER,
 subject: '聯合大學金頭腦建立隊伍通知信'
 };
 
-var forgotPassword = {
+var forgotPasswordMail = {
   from: process.env.GMAIL_USER,
   subject: '聯合大學金頭腦忘記密碼通知信'
 }
 
-var updatePassword = {
+var updatePasswordMail = {
   from: process.env.GMAIL_USER,
   subject: '聯合大學金頭腦密碼已更改通知信'
 }
@@ -42,4 +42,4 @@ var sendEmail = function (payload) {
 }
 
 
-module.exports = { transporter, successSignup, successCreate, sendEmail, forgotPassword, updatePassword}
+module.exports = { transporter, successSignupMail, successCreateMail, sendEmail, forgotPasswordMail, updatePasswordMail}

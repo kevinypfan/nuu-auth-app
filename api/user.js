@@ -6,8 +6,8 @@ const {ObjectID} = require('mongodb')
 const {authenticate} = require('../middleware/authenticate.js')
 const {verifyRole} = require('../middleware/authenticate.js')
 const {verifyJuror} = require('../middleware/authenticate.js')
-var { successSignup, sendEmail, forgotPassword, updatePassword } = require('../modules/mailerMod.js')
-var { randomToken, forgotMail, passwordUpdatedMail } = require('../modules/forgotModules.js')
+var { successSignupMail, sendEmail, forgotPasswordMail, updatePasswordMail } = require('../modules/mailerMod.js')
+var { randomToken, forgotHtml, passwordUpdatedHtml } = require('../modules/forgotModules.js')
 var userRouter = express.Router();
 
 
@@ -24,9 +24,9 @@ userRouter.post('/forgotPassword', (req, res) => {
     var expire = Date.now() + 60000
     return user.generateResetToken(token, expire)
   }).then(({token, user}) => {
-    forgotPassword.to = user.email;
-    forgotPassword.html = forgotMail(req.headers.host, token);
-    return sendEmail(forgotPassword)
+    forgotPasswordMail.to = user.email;
+    forgotPasswordMail.html = forgotHtml(req.headers.host, token);
+    return sendEmail(forgotPasswordMail)
   }).then((result) => {
     res.send(result)
   }).catch((e) => {
@@ -63,9 +63,9 @@ userRouter.patch('/forgotPassword/:token', (req, res) => {
     user.reset.expire = undefined
     return user.save()
   }).then((user) => {
-    updatePassword.to = user.email
-    updatePassword.html = passwordUpdatedMail(user.email)
-    return sendEmail(updatePassword)
+    updatePasswordMail.to = user.email
+    updatePasswordMail.html = passwordUpdatedHtml(user.email)
+    return sendEmail(updatePasswordMail)
   }).then((result) => {
     res.send(result)
   }).catch((e) => {
@@ -82,9 +82,9 @@ userRouter.patch('/updatePassword', authenticate, (req, res) => {
     console.log(user);
     return user.save()
   }).then((user) => {
-    updatePassword.to = user.email
-    updatePassword.html = passwordUpdatedMail(user.email)
-    return sendEmail(updatePassword)
+    updatePasswordMail.to = user.email
+    updatePasswordMail.html = passwordUpdatedHtml(user.email)
+    return sendEmail(updatePasswordMail)
   }).then((result) => {
     res.send(result)
   }).catch((err) => {
@@ -101,11 +101,10 @@ userRouter.post('/signup',(req, res) => {
   user.save().then((user) => {
     return System.findOne({'name':"systemArg"})
   }).then((system) => {
-    successSignup.html = system.successSignup
-    successSignup.to = body.email
-    return sendEmail(successSignup)
+    successSignupMail.html = system.successSignup
+    successSignupMail.to = body.email
+    return sendEmail(successSignupMail)
   }).then((result) => {
-    console.log(result);
     return user.generateAuthToken()
   }).then((token) => {
     res.header('authToken', token).send();
