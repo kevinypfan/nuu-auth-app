@@ -29,6 +29,16 @@ var updatePasswordMail = {
 }
 
 var sendEmail = function (payload) {
+ transporter.sendMail(payload, function(error, info){
+    if (error) {
+      console.log("send mail fail")
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+}
+
+var sendEmailPromise = function (payload) {
    return new Promise((resolve, reject) => {
      transporter.sendMail(payload, function(error, info){
         if (error) {
@@ -41,5 +51,4 @@ var sendEmail = function (payload) {
    })
 }
 
-
-module.exports = { transporter, successSignupMail, successCreateMail, sendEmail, forgotPasswordMail, updatePasswordMail}
+module.exports = { transporter, successSignupMail, successCreateMail, sendEmail, forgotPasswordMail, updatePasswordMail, sendEmailPromise}

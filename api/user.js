@@ -6,7 +6,7 @@ const {ObjectID} = require('mongodb')
 const {authenticate} = require('../middleware/authenticate.js')
 const {verifyRole} = require('../middleware/authenticate.js')
 const {verifyJuror} = require('../middleware/authenticate.js')
-var { successSignupMail, sendEmail, forgotPasswordMail, updatePasswordMail } = require('../modules/mailerMod.js')
+var { successSignupMail, sendEmail, forgotPasswordMail, updatePasswordMail, sendEmailPromise } = require('../modules/mailerMod.js')
 var { randomToken, forgotHtml, passwordUpdatedHtml } = require('../modules/forgotModules.js')
 var userRouter = express.Router();
 
@@ -26,9 +26,9 @@ userRouter.post('/forgotPassword', (req, res) => {
   }).then(({token, user}) => {
     forgotPasswordMail.to = user.email;
     forgotPasswordMail.html = forgotHtml(req.headers.host, token);
-    return sendEmail(forgotPasswordMail)
+    return sendEmailPromise(forgotPasswordMail)
   }).then((result) => {
-    res.send(result)
+    res.send("請到信箱點選通知信中連結更新密碼")
   }).catch((e) => {
     res.status(403).send(e)
   })
@@ -67,9 +67,8 @@ userRouter.patch('/forgotPassword/:token', (req, res) => {
   }).then((user) => {
     updatePasswordMail.to = user.email
     updatePasswordMail.html = passwordUpdatedHtml(user.email)
-    return sendEmail(updatePasswordMail)
-  }).then((result) => {
-    res.send(result)
+    sendEmail(updatePasswordMail)
+    res.send("密碼已更新")
   }).catch((e) => {
     res.status(403).send()
   })
@@ -86,9 +85,8 @@ userRouter.patch('/updatePassword', authenticate, (req, res) => {
   }).then((user) => {
     updatePasswordMail.to = user.email
     updatePasswordMail.html = passwordUpdatedHtml(user.email)
-    return sendEmail(updatePasswordMail)
-  }).then((result) => {
-    res.send(result)
+    sendEmail(updatePasswordMail)
+    res.send("密碼已更新")
   }).catch((err) => {
     res.status(403).send(err)
   })
@@ -139,9 +137,8 @@ userRouter.post('/signin', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   User.findByCredentials(body.email, body.password).then((user) => {
     return user.generateAuthToken()
-    .then((token) => {
-      res.header('authToken', token).send();
-    })
+  }).then((token) => {
+    res.header('authToken', token).send();
   }).catch((e) => {
     res.status(403).send(e);
   })

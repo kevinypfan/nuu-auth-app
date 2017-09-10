@@ -99,8 +99,7 @@ teamRouter.post('/creatTeam', authenticate, upload, function (req, res) {
   }).then((system) => {
     successCreateMail.to = teamData.leader.email
     successCreateMail.html = system.successCreate
-    return sendEmail(successCreateMail)
-  }).then((success) => {
+    sendEmail(successCreateMail)
     res.send("報名成功")
   }).catch((e)=>{
     res.status(403).send(e)
